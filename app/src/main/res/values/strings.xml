@@ -24,6 +24,7 @@
         <item>Medium</item>
         <item>Low</item>
     </string-array>
+    <string name="title_activity_product_list">ProductListActivity</string>
 
 
 </resources>
