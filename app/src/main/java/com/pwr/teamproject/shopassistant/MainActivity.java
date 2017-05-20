@@ -1,6 +1,7 @@
 package com.pwr.teamproject.shopassistant;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -47,6 +48,9 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+
+        recreateDrawer();
+
         navigationView.setNavigationItemSelectedListener(this);
     }
 
@@ -87,6 +91,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        int SIGN_IN_CODE = 1;
 
         if (id == R.id.nav_search_product) {
             // Handle the camera action
@@ -99,11 +104,47 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_settings) {
 
         } else if (id == R.id.nav_sign_in) {
-            startActivity(new Intent(MainActivity.this, LoginActivity.class));
+            startActivityForResult(new Intent(MainActivity.this, LoginActivity.class), SIGN_IN_CODE);
+
+        } else if (id == R.id.nav_sign_out) {
+            SharedPreferences prefs = getSharedPreferences("ShopAssistant", MODE_PRIVATE);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean("signedIn", false);
+            editor.commit();
+            recreateDrawer();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch(requestCode) {
+            case 1:
+                recreateDrawer();
+                break;
+        }
+    }
+
+    public void recreateDrawer(){
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+
+        SharedPreferences prefs = getSharedPreferences("ShopAssistant", MODE_PRIVATE);
+        boolean isSignedIn = prefs.getBoolean("signedIn", false);
+
+        if(isSignedIn)
+        {
+            navigationView.getMenu().clear();
+            navigationView.inflateMenu(R.menu.activity_main_drawer_signed_in);
+        } else
+        {
+            navigationView.getMenu().clear();
+            navigationView.inflateMenu(R.menu.activity_main_drawer);
+        }
+
+        navigationView.setNavigationItemSelectedListener(this);
+    }
+
 }
