@@ -33,6 +33,9 @@
     <string name="prompt_password">Password</string>
     <string name="action_sign_in">Sign in or register</string>
     <string name="action_sign_in_short">Sign in</string>
+    <string name="error_empty_username">This field is required</string>
+    <string name="error_empty_password">This field is required</string>
+    <string name="error_invalid_account">No account with this username and password exist</string>
     <string name="error_invalid_email">This email address is invalid</string>
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
