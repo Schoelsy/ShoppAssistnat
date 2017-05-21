@@ -110,6 +110,7 @@ public class MainActivity extends AppCompatActivity
             SharedPreferences prefs = getSharedPreferences("ShopAssistant", MODE_PRIVATE);
             SharedPreferences.Editor editor = prefs.edit();
             editor.putBoolean("signedIn", false);
+            editor.putString("username", null);
             editor.commit();
             recreateDrawer();
         }
