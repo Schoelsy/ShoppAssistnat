@@ -1,11 +1,14 @@
 package com.pwr.teamproject.shopassistant;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,6 +19,18 @@ import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import static android.R.attr.id;
 import static android.view.ViewGroup.FOCUS_BLOCK_DESCENDANTS;
@@ -73,13 +88,53 @@ public class ProductListActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+
         // add back button
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        String intentString = getIntent().getStringExtra("searchString");
+        Log.d("IntentString", intentString);
+
+        final JSONResponse jrespons = new JSONResponse(intentString);
+
+       Thread thread =  new Thread(new Runnable() {
+            public void run() {
+                // a potentially  time consuming task
+                jrespons.doInBackground();
+            }
+        });
+        thread.start();
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        String JSON = jrespons.getJSON();
+
+        List<String> Jimages = new ArrayList<>();
+        List<String> JproductNames = new ArrayList<>();
+        List<String> JproductPrices = new ArrayList<>();
+        List<String> JclosestShops = new ArrayList<>();
+
+        try {
+            JSONArray array = (JSONArray) new JSONTokener(JSON).nextValue();
+            Log.d("objectPOTATO", array.toString());
+            for (int i = 0; i < array.length(); i++){
+                JSONObject object = array.getJSONObject(i);
+                JproductNames.add(object.getString("Name"));
+
+            }
+        } catch (JSONException e) {
+            // Appropriate error handling code
+            Log.d("objectPOTATO", "AdrianPotato");
+        }
+
+
 
         ProductAdapter productAdapter = new ProductAdapter(this, images, productNames, productPrices, closestShops);
         myListView = (ListView) findViewById(R.id.myListView);
         myListView.setAdapter(productAdapter);
-
 
         // on product click
         myListView.setOnItemClickListener(new OnItemClickListener() {
@@ -95,6 +150,8 @@ public class ProductListActivity extends AppCompatActivity {
         });
 
 
+
+
     }
 
 
@@ -107,5 +164,6 @@ public class ProductListActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
 
 }
