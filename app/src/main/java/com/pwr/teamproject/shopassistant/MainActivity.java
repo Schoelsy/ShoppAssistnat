@@ -13,6 +13,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -50,6 +51,7 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
 
         recreateDrawer();
+        recreateHeader();
 
         navigationView.setNavigationItemSelectedListener(this);
     }
@@ -113,6 +115,7 @@ public class MainActivity extends AppCompatActivity
             editor.putString("username", null);
             editor.commit();
             recreateDrawer();
+            recreateHeader();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -125,10 +128,29 @@ public class MainActivity extends AppCompatActivity
         switch(requestCode) {
             case 1:
                 recreateDrawer();
+                recreateHeader();
                 break;
         }
     }
 
+    // grettings if user is logged in
+    public void recreateHeader(){
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        SharedPreferences prefs = getSharedPreferences("ShopAssistant", MODE_PRIVATE);
+        View hView =  navigationView.getHeaderView(0);
+        TextView navUsername = (TextView)hView.findViewById(R.id.username);
+        boolean isSignedIn = prefs.getBoolean("signedIn", false);
+        if(isSignedIn)
+        {
+            String username = prefs.getString("username", null);
+            navUsername.setText("Hello " + username);
+        } else
+        {
+            navUsername.setText(null);
+        }
+    }
+
+    // separate drawer options if user is logged in
     public void recreateDrawer(){
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
 
